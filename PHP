@@ -1,0 +1,110 @@
+<?php
+    if(isset($_POST["btn"])){
+        $conn = new mysqli("localhost","username","password","dogs");
+        if($conn->connect_error){
+            die("<h1>Connection Failed: ".$conn->connect_error);
+        }
+        else{
+            echo "Connection Successful";
+            }
+    }
+?>
+<html>
+<head>
+<title>Database Connectivity</title>
+</head>
+<body>
+    <form method="post">
+        <input type="submit" name ="btn">
+    </form>
+<h1>
+<?php
+$query="SELECT id FROM entries";
+             $result = $conn->query($query);
+             $numOfEntries =0;
+             while($row = $result->fetch_assoc()) {
+             $numOfEntries++;
+             }
+             $query_2="SELECT id FROM owners";
+             $result_2 = $conn->query($query_2);
+             $numOfOwners = 0;
+             while($row = $result_2->fetch_assoc()){
+             $numOfOwners++;
+             }
+
+             $query_3="SELECT id from events";
+             $result_3 = $conn->query($query_3);
+             $numOfEvents = 0;
+             while($row = $result_3->fetch_assoc()){
+             $numOfEvents++;
+             }
+             echo "Welcome to Poppleton Dog Show! This year $numOfOwners owners entered $numOfEntries dogs in $numOfEvents events!" ;
+?>
+</h1>
+  <div>
+      <?php
+      $test = 274;
+      $topDogsQuery = "SELECT score FROM entries WHERE dog_id=$test";
+      $res4 = $conn->query($topDogsQuery);
+      while($row = $res4->fetch_assoc()){
+      }
+      $id = 0;
+      $arrayOfDogs = ["averageScore"=>0,"id"=>0];
+      while($id<$numOfEntries+1){
+      $totalScore = 0;
+      $queryDogs = "SELECT score FROM entries WHERE dog_id=$id";
+      $res5 = $conn->query($queryDogs);
+      $numOfEvents = 0;
+      while($row = $res5->fetch_assoc()){
+      $totalScore = $totalScore + $row["score"];
+      $numOfEvents++;
+      }
+      if($numOfEvents<2){
+      }
+      else{
+      $averageScore = $totalScore/$numOfEvents;
+      array_push($arrayOfDogs, ["averageScore" =>$averageScore,"id" => $id]);
+      }
+      $id++;
+      }
+      rsort($arrayOfDogs);
+      for ($i = 0; $i < 10 && $i < count($arrayOfDogs); $i++) {
+      echo "<ul>";
+          $x = $arrayOfDogs[$i]['averageScore'];
+          $y = $arrayOfDogs[$i]['id'];
+          $queryDetails = "SELECT name,breed_id,owner_id FROM dogs WHERE id=$y";
+          $resultDetails=$conn->query($queryDetails);
+          while($row=$resultDetails->fetch_assoc()){
+          $breedId = $row["breed_id"];
+          $name=$row["name"];
+          $ownerId = $row["owner_id"];
+          $queryBreed = "SELECT name FROM breeds WHERE id = $breedId";
+          $breedRes = $conn->query($queryBreed);
+          while($row=$breedRes->fetch_assoc()){
+          $breedName=$row["name"];
+          }
+          $ownerQuery = "SELECT name,email FROM owners WHERE id=$ownerId";
+          $ownerRes = $conn->query($ownerQuery);
+          while($row=$ownerRes->fetch_assoc()){
+          $ownerName = $row["name"];
+          $email = $row["email"];
+          }
+          echo "<li>Name: $name | Breed: $breedName | Average Score: $x | Owner: $ownerName | Email: $email </li>";
+          echo "</ul>";
+          }
+      }
+      ?>
+    <br>
+    <br>
+    <br>
+    <div>
+    Next to each dog, add the name of the owner and the owner’s email address. The
+    email address link should start up the default email application to send an email to
+    the owner. The owner’s name should link to a second page containing the owner’s
+    contact details
+    </div>
+</body>
+
+
+
+</html>
