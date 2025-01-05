@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <title>Owners</title>
+<body>
+<?php
+$conn = new mysqli("localhost","username","password","dogs");
+        if($conn->connect_error){
+            die("<h1>Connection Failed: ".$conn->connect_error);
+        }
+        else{
+            //echo "Connection Successful";
+            }
+?>
+<h1>
+  <?php
+    if (isset($_GET['data'])) {
+        $ownerId = htmlspecialchars($_GET['data']);
+        }
+    else {
+        echo "No data received.";
+    }
+
+
+    $query = "SELECT name,email,phone FROM owners WHERE id=$ownerId";
+    $result = $conn->query($query);
+    while($row = $result->fetch_assoc()) {
+    $name = $row["name"];
+    $email = $row["email"];
+    $phone = $row["phone"];
+    echo "$name";
+    }
+    ?>
+</h1>
+<?php
+echo "<ul>";
+    echo"<li>Phone number: $phone</li>";
+    echo"<li>Email: $email</li>";
+echo "</ul>";
+?>
+
+</body>
+</html>
